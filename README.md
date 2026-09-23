@@ -16,6 +16,10 @@ Status: **0.1.0-draft.1 — proposal, not an established standard.** The design 
 | [Worked examples](ADC-EXAMPLES.md) | Seven contrasting undertakings, including inconclusive and abandoned work. |
 | [Research synthesis](ADC-RESEARCH.md) | Primary-source comparisons, design decisions, limitations, and quality tests. |
 
+## Applying ADC
+
+The [adoption plan](ADC-ADOPTION.md) gives a small pilot and guidance for choosing where records live. It includes two non-normative application patterns: [a solo GitHub developer](ADC-SOLO-GITHUB.md) and [a platform team using GitHub, Jira, and qTest](ADC-TEAM-PLATFORM.md). Each has a copyable prompt and a worked example; neither changes the specification's core.
+
 ## The model
 
 An **undertaking** is a distinguishable scope of purposeful work. Its account preserves:
