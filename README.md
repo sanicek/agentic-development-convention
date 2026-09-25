@@ -16,6 +16,10 @@ Status: **0.1.0-draft.1 — proposal, not an established standard.** The design 
 | [Worked examples](ADC-EXAMPLES.md) | Seven contrasting undertakings, including inconclusive and abandoned work. |
 | [Research synthesis](ADC-RESEARCH.md) | Primary-source comparisons, design decisions, limitations, and quality tests. |
 
+## Applying ADC
+
+The [repo-first adoption plan](ADC-ADOPTION.md) tests whether an agent can resume work from a clean repository checkout. It includes two non-normative application patterns: [a solo GitHub developer](ADC-SOLO-GITHUB.md) and [a multi-repo platform team](ADC-TEAM-PLATFORM.md). Git contains a discoverable work checkpoint; Jira, qTest, and operational systems retain their planning and evidence roles. Neither pattern changes the specification's core.
+
 ## The model
 
 An **undertaking** is a distinguishable scope of purposeful work. Its account preserves:
