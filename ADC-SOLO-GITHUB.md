@@ -1,55 +1,51 @@
-# ADC pattern: solo developer on GitHub
+# ADC pattern: solo developer, starting from a clone
 
-Informative application of [ADC 0.1.0-draft.1](ADC-SPEC.md). The aim is a reliable history for your future self across repositories, without a coordination process. All examples here are fictional. This is a reusable example, not a requirement to create the named files or headings.
+Informative example under [ADC 0.1.0-draft.1](ADC-SPEC.md). The repository is the entry point; GitHub issues and Projects are optional planning surfaces. IDs, revisions, and observations below are fictional.
 
-## Pick one account for each piece of work
+## Minimal layout
 
-| Work | Best existing account | What it needs to preserve |
-| --- | --- | --- |
-| Small reversible correction finished in one sitting | Commit message; optional PR if you already use one. | Purpose, narrow result, and direct check. Example: `Correct offline-host error text. Inspected diff: one message changed; no run attempted.` |
-| Change spread over sessions | GitHub issue for intent/current state; PR for the proposed change and evaluated revision. | Link between them; issue remains the current account until the whole intended outcome is evaluated. |
-| One PR is the entire undertaking | PR description and its discussion. | Original goal, material boundaries, evidence for the final revision, actual result and remaining limits. No issue needed. |
-| Investigation or choice with no code | Existing issue/discussion or maintained project note. | Question, observations or reasoning, conclusion or uncertainty, and whether any implementation remains intended. |
-| Long-lived decision affecting later work | Existing architecture/operations document in the owning repo, or a central note if it truly spans repositories. | Decision, reason, applicable scope, and what it supersedes. Link from affected undertakings. |
-
-Apply the same semantic distinctions in every repo; copying a directory structure or a template into every repo is optional. Git history captures *what text changed*. A short account supplies *why*, *what was checked*, and *what the result actually means*. For a one-line correction, that can be a commit message; for a complex prototype, an issue and PR are usually easier to return to than a sequence of commits.
-
-## Copyable prompt for an issue or PR
-
-Use only prompts that add meaning missing from existing fields. An issue can carry intent and current status; a PR can carry evaluated code and checks. If the same undertaking uses both, link them and write each fact once. The headings are suggestions, not required ADC syntax.
-
-```markdown
-Purpose and scope: [What question or result is sought? What is excluded if material?]
-Current state: [Observed state; proposed work clearly separated from completed work.]
-Material decisions: [Only choices whose reason will matter later; otherwise omit.]
-Result and basis: [Exact revision/environment/period as needed; check or observation and result.]
-Limits and continuation: [Unexamined scope, open work, or why this work stops.]
+```text
+WORK.md                 Active work and how to read it
+work/EE-17.md           One undertaking spanning sessions
 ```
 
-For an interruption, update `Current state` and `Limits and continuation` before leaving the session. For closure, state completed versus abandoned and say which original conditions were met. A passing local test supports only the code revision it ran against; it does not prove a deployment. A document can be complete with a decision that implementation should not proceed.
+Create the index when there is work whose state cannot be recovered from code and commits alone. An active row links its account. For a tiny fix completed in one sitting, a commit message can record purpose and direct check without an index row. Remove completed multi-session work from the active index, retaining its account in Git for history. There is no mandatory archive catalog.
 
-## Worked example: multi-session correction
+## Copyable account
 
-Suppose a repository for an AAP execution environment build has a dependency update that breaks a collection import. The following GitHub issue and PR text illustrate a short durable account. IDs, commands, results, and revisions are illustrative; no build was run for this document.
+```markdown
+# EE-17 — Restore execution environment imports
 
-**Issue `#83` — current account.**
+Intent: [Desired result or question, evaluation basis, material constraints.]
+State at checkpoint: [When, disposition, what is true, branch/revision described.]
+Assessment: [Observation, target/revision/environment, result and limits.]
+Next: [Action, resumption condition, or reason work has stopped.]
+```
 
-> Purpose: restore imports for the existing base execution environment after updating the dependency lock. Constraint: preserve the supported Python version and do not change production image tags in this undertaking. Completion requires a successful build, an import check against that built image, and a reviewed dependency delta. Publishing or deploying the image is separate work.
->
-> Current state (session one): open. Import fails in image `ee-test:83a`; the dependency diff points to an incompatible package version. Proposed pin `x.y.z` is under review. No production tag changed. Next: build with the pin and inspect the installed package versions. The suspected incompatibility is a hypothesis, not a verified root cause.
+Write only material facts. Add a decision and its reason when it changes future interpretation. The state is a dated checkpoint, not a live status after someone changes a branch or environment. An agent opens `WORK.md`, reads the account, checks the named revision and relevant current conditions, then acts. A PR or issue link may help, but is not required to understand the account.
 
-**PR `#84` — source change and observed checks.**
+## Worked example
 
-> Related undertaking: issue `#83`. Pin package to `x.y.z` in the build inputs; no production configuration touched. At revision `abc123` in the fictional local build, the container build exited successfully and `ansible-galaxy collection list` showed the target collection. The import check reported success inside that built image. The dependency diff contains the one intended pin. These observations cover `abc123` in the local test environment, not registry publication or production behavior.
+An AAP execution environment update breaks a collection import. The developer starts branch `ee-17-imports`, publishes the opening account and active index row to the default branch through normal repository review, and continues implementation on the feature branch. The opening checkpoint reads:
 
-**Issue `#83` — closure after the PR merge.**
+```markdown
+# EE-17 — Restore imports after dependency update
 
-> Completed for the stated build-and-import scope at revision `abc123`; the build, import result, and reviewed dependency diff are in PR `#84`. No image was published and no production tag changed. Publishing or deployment, if desired, is a separate undertaking; it is not implied complete here.
+Intent: Build the existing base EE and import the target collection with the
+supported Python version. Preserve production image tags. Publishing the
+image is outside this undertaking.
 
-If the PR changes after the checks, identify whether the evidence still applies to its final revision. If the build fails and you stop, record abandoned or suspended with the failure and useful findings instead of closing the issue as a successful fix. GitHub's [issue auto-closure on a linked PR merge](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue) is useful only when merge actually satisfies the whole issue scope; ordinary links are safer for work with later checks.
+State at checkpoint: Open, 2026-09-25. The baseline at `b41` fails its
+import check. Work continues on `ee-17-imports`; `b41` is the last checked
+revision. The proposed dependency pin is unvalidated.
 
-## Cross-repository history without a catalog
+Assessment: Import failure observed in local image `ee-test:17a`.
+The dependency mismatch is a hypothesis, not a verified cause.
 
-Use the native search and links of your GitHub account to recover issue and PR histories. If a single decision governs multiple projects, maintain **one** authoritative decision in the owning repo or a truly shared existing location and link to it. For occasional cross-repo work, a short central issue can identify the purpose and link the affected PRs; avoid creating a permanent central register merely because multiple repositories exist.
+Next: Build with the proposed pin, inspect installed versions, and run the
+import check against that exact image.
+```
 
-Try this pattern on the three cases in the [adoption plan](ADC-ADOPTION.md). Inspect what is missing after returning in a new session, then adjust the prompts rather than adding routine ceremonies.
+At handoff, update the account on the discoverable branch with the checked revision and results. If the feature branch contains newer unrecorded commits, the incoming agent detects and evaluates the drift. After checking the final revision, record the bounded result and remove the active index row. Merge or PR status alone does not supply the assessment.
+
+This pattern has a cost: discoverable in-progress work requires a published checkpoint. A solo developer who does not need that guarantee can keep the account only on the feature branch, accepting that a clean default-branch clone cannot automatically find it.
