@@ -1,41 +1,49 @@
-# Putting ADC into practice
+# Putting ADC into practice: repo-first pilot
 
-Informative adoption plan for [ADC 0.1.0-draft.1](ADC-SPEC.md). This document and the two application patterns below add no core requirements or standardized ADC profiles. They illustrate how to use existing records without installing anything.
+Informative adoption design for [ADC 0.1.0-draft.1](ADC-SPEC.md). This is a proposed storage and reading convention for two settings, not an added core requirement. It tests whether a repository checkout gives an agent enough context to find and resume work. The templates and observations are illustrative.
 
-## The decision to make for each undertaking
+## The entry-point requirement
 
-Choose the existing record that will answer **why this work exists, where it stands, and what can be claimed about it**. Use references to other records for the facts they establish. A single undertaking can span several repositories without being split just to fit a tool. Separate undertakings when their purpose, authority, evaluation, or ownership genuinely differs.
+From a known repository's default branch, a new participant should find active undertakings, their canonical accounts, the last recorded state, and how to continue. The participant follows references to source revisions, Jira, qTest, and operational observations as needed. The checkout is a **map and durable checkpoint**; it cannot certify the current state of an external system.
 
-| Need | Solo GitHub developer | Multi-repo platform team |
+`WORK.md` at the root is the suggested entry point. It indexes unfinished undertakings. Nontrivial work gets one small account in `work/`. Closed work leaves the active index, while its account and Git history remain. A tiny completed change can be accounted for in its commit message. These filenames are local choices, not ADC syntax.
+
+```markdown
+# Work entry point
+
+Read this file before selecting work. Each active entry points to its canonical
+account. Verify branch/revision and external conditions before acting.
+
+| Work | State at checkpoint | Account | External planning |
+| --- | --- | --- | --- |
+| EE import repair | Waiting for local build | [EE-17](work/EE-17.md) | none |
+```
+
+Update an account at a material checkpoint: handoff, suspension, decision, changed scope, or claimed outcome. Routine commits need no separate status update. The agent edits ordinary source text and reviews the diff. No special parser, CLI, ticket type, or workflow engine is assumed.
+
+## Where authority lives
+
+| Meaning | Solo repository | Multi-repo platform work |
 | --- | --- | --- |
-| Work identity and current disposition | A commit for a tiny finished correction; otherwise a PR or an issue if work outlives a PR/session. | Existing Jira work item, at the level the team already plans and tracks. A PI objective or sprint supplies scheduling context, not outcome evidence. |
-| Proposed and actual source/configuration changes | Git commit and PR when one exists. | PRs in the affected repositories, linked from the Jira item. Each PR describes its own scope; the Jira item holds the overall outcome. |
-| Material decision | Issue/PR discussion if local to the work; tracked document if it will govern later work. | Jira discussion for an undertaking-specific choice; a maintained document in the owning repository or existing knowledge base for a durable cross-repo decision. Jira links to it. |
-| Testing | Actual test result in the PR, check run, or compact summary; no test tracker merely for ADC. | Existing qTest **test log / run result** for a test already managed there; the test case alone is a definition, not proof of execution. Other checks remain in their existing systems. |
-| Live or operational state | Record a bounded observation in the issue/PR or existing operational record. | Existing change/incident record or appropriately retained observation, linked from Jira. A merged PR or passed staging run does not establish production state. |
-| Sensitive or expiring evidence | Restricted existing location and a shareable, bounded summary where needed. | Retain a non-secret summary with target, time, method, result, and limits in the authorized record; disclose restricted or expired links to the intended audience. |
+| Intent, last recorded state, assessment | Account in the affected repo; `WORK.md` finds active work. | One account in a coordination/owning repo; its `WORK.md` finds active work. Affected repos point to it from their own `WORK.md`. |
+| Repository contents | Commits and branches in that repo. | Commits and branches in each affected repo, identified by revision and branch in the account. |
+| Planning and coordination | Optional GitHub issue/Project. | Jira owns prioritization, sprint/PI context, assignment, and required workflow; the Git account links the item. |
+| Checks and observed live effects | CI run or bounded observation, summarized or linked with target and result. | qTest run/log if used, CI, incident/change record, or telemetry, interpreted in the account. |
+| Approvals and access | Existing repository policy. | Existing organizational controls; a Git account grants no approval. |
 
-These are defaults for the two pilots, not prescribed ADC storage rules. When a system is unavailable, use the closest existing durable record that preserves the same meaning. Avoid copying the same outcome narrative into a PR, Jira, and qTest. Let each system speak for the fact it knows; a short link and interpretation connects them.
+This changes the previous draft's assumption that a GitHub issue or Jira item is normally the work account. Trackers remain planning views and control points. When a Jira status or PR merge conflicts with an account, reconcile the discrepancy; do not infer an outcome from the status. Avoid automatic two-way copying of prose. Stable IDs and links usually suffice.
 
-## Pilot sequence
+## Visibility boundary
 
-1. **Select representative work.** Solo: a small correction, a multi-session change, and an investigation or decision without code. Team: one cross-repository integration/configuration change, one operational investigation or remediation, and one decision or experiment that can end without delivery. Use already planned work; do not create tasks for the sake of the pilot.
-2. **Name the current account for each undertaking.** The solo account will usually be its issue or PR. The team account will usually be its existing Jira item. Identify where the authoritative source revision, qTest execution (if relevant), and operational observation live. Record the links only where there is a material reason for a later reader to follow them.
-3. **Apply the smallest useful text.** Copy the appropriate [solo pattern](ADC-SOLO-GITHUB.md) or [team pattern](ADC-TEAM-PLATFORM.md) into the existing record as needed; delete inapplicable prompts. Reuse the ticket's existing goal, acceptance notes, and ownership instead of restating them. Do not add ADC labels, forms, or special agents yet.
-4. **Update at meaningful boundaries.** New information changes intent, a material decision is made, someone hands work off, the work is deliberately suspended, or an outcome is claimed. Ordinary commits and routine status moves need no special ADC ceremony.
-5. **Review actual use after those cases.** Have the solo developer return after another session and an unfamiliar team member read one team account. Ask them to state the original purpose, actual current state, basis and limits of the result, and next action without reconstructing a chat. Note any missing facts, duplicate upkeep, time spent maintaining the account, and cases where “Done” overstates an outcome. Remove prompts that add no value; strengthen only the gaps found.
+An account committed only to a feature branch is invisible to a clone of the default branch. To meet the entry-point requirement, publish the active index and a checkpoint account to a discoverable default branch when work starts or is handed off, under normal review policy. Between checkpoints the implementation branch may advance: the account identifies the branch and checked revision, and the next agent fetches and reconciles drift. If publishing checkpoints is infeasible, the guarantee must be narrowed. A clone cannot discover unpublished work.
 
-The pilot succeeds if existing records allow accurate continuation and bounded evaluation at an acceptable cost. A filled template, qTest entry, number of links, or mere PR merge is not a success measure. If a particular tool mapping fails, adjust the mapping rather than modifying ADC core to match that tool.
+Git cannot atomically snapshot several repositories or a live service. Record exact revisions at a handoff; check current branch tips and external conditions before acting. Restricted evidence remains in its authorized system; the account retains a non-secret bounded summary and an access-aware reference. Historical observations are not live truth.
 
-## What to standardize after the pilot
+## Pilot
 
-Standardize a **reading convention** first: where the current account is, what a closure claim says, and how to find evidence. If repeated PRs benefit from prefilling a small prompt, an optional [GitHub PR template](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository) can be placed in the relevant repositories or an account/organization default; its mere presence does not prove conformance. Team Jira fields and statuses should be mapped to ADC meanings only after checking their actual local configuration. A qTest–Jira integration can be used if already configured; direct links to the appropriate qTest result are sufficient without it.
+1. [Solo](ADC-SOLO-GITHUB.md): add `WORK.md` to one repo, track one multi-session task, and leave a tiny fix in a commit message. Resume the task from a clean clone in a new session.
+2. [Team](ADC-TEAM-PLATFORM.md): select one existing cross-repo outcome. Add one canonical account to an owning or coordination repo and pointers in affected repos. Keep Jira/PI and qTest practices. Resume from the root clone, then from one affected repo.
+3. In both cases, ask a fresh agent to state purpose, last known state, exact revisions, evidence limits, and next action without prior chat or starting in a tracker. Check whether it detects changed branches and external conditions.
+4. Count duplicate upkeep and missed handoffs. Fix publication/discovery first if the clone cannot reveal active work. Remove fields that do not improve recovery.
 
-Avoid automatic closure triggered by a link when the undertaking includes deployment, live verification, or more than one repository. GitHub can [auto-close a linked issue on merge](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue); that system event establishes a merge, not completion of a broader undertaking. Use ordinary references where appropriate or configure the repository's behavior consciously.
-
-The specific templates, repo names, sample Jira key, and fictitious observations below are demonstrations. An organization that later wants binding local obligations can publish a named, versioned profile under the extension rules in the specification. Until then these are adaptable application patterns.
-
-## Application patterns
-
-- [Solo developer on GitHub](ADC-SOLO-GITHUB.md): consistent historical record across repositories with no collaboration workflow.
-- [Platform team with GitHub, Jira, and qTest](ADC-TEAM-PLATFORM.md): existing scrum and PI planning, cross-repo work, tests where they add evidence, and operational outcomes.
+This tests an **agent-readable work layer above Git revisions**. It does not make repository files mandatory in ADC core. A future workspace-state tool could automate indexing and projections while preserving these meanings.
