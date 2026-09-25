@@ -1,65 +1,72 @@
-# ADC pattern: platform team across GitHub, Jira, and qTest
+# ADC pattern: platform team across repositories
 
-Informative application of [ADC 0.1.0-draft.1](ADC-SPEC.md). The team retains its scrum and PI planning. Jira, GitHub, qTest, and operational records each hold the facts they are already good at holding. Names, URLs, issue keys, observations, and results in the worked example are fictional. The template does not install a new status flow or impose qTest on every kind of work.
+Informative example under [ADC 0.1.0-draft.1](ADC-SPEC.md). Git holds the agent-readable work account; Jira retains scrum/PI planning and required workflow. qTest and operations systems hold their own observations. Names, keys, revisions, and results below are fictional.
 
-## Assign meaning to the existing systems
+## Choose one discoverable work root
 
-| System | Typical authoritative fact | What its status alone does not establish |
-| --- | --- | --- |
-| Jira work item | Overall intent, planning/PI context, scope, current undertaking disposition, material decisions, unresolved work and final bounded assessment. | A `Done` workflow status does not by itself establish all effects across repositories or production. |
-| GitHub PRs and commits | Exact proposed and merged code/configuration revisions, discussion and checks tied to those revisions. | Merge does not establish deployment, successful operation, or the broader Jira outcome. |
-| qTest Manager, when tests are managed there | Defined case and the particular **test run/log** result against its relevant environment and revision. | A test case's existence or a stale passing run does not establish current execution or every operational effect. |
-| Change/incident/observability records | Applied action and time-bounded observation of the actual environment; rollback, cleanup and impact. | A request accepted by an API does not alone establish effective configuration. |
-| Maintained architecture or runbook document | A decision or operational rule intended to outlive the undertaking. | A document update does not establish a deployed change. |
+For a cross-repo undertaking, choose the repo that owns its outcome. If no product repo owns platform work across many repos, use a small `platform-workspace` repository. Its root `WORK.md` indexes active work; each `work/` account points to affected repos, checked branches/revisions, Jira items, tests, and operational observations. This is a work map, not a monorepo or a copy of every repository.
 
-The Jira item is usually the **current work account**; its references point to the evidence held elsewhere. A qTest–Jira integration is useful when present but not a prerequisite. Tricentis distinguishes [test cases from test runs and their logs](https://docs.tricentis.com/qtest-saas/content/manager/execute_test_runs.htm); use the relevant run/log, not only a generic coverage link. Jira can [link work items across projects](https://support.atlassian.com/jira-software-cloud/docs/link-issues/) when the local configuration permits. A PI objective and sprint may organize and prioritize the undertaking; they need not become extra ADC artifacts.
-
-For several repositories, put the overall expected outcome and disposition in one existing Jira item where possible. Link each affected PR and state which portion it covers. Use separately tracked work only when authority, ownership, evaluation, or planning already makes the work separable. If Jira issues in different projects are required, designate the issue whose account governs the overall outcome and link the others; conflicting status labels remain explicitly unresolved until reconciled.
-
-## Copyable Jira account text
-
-Use existing description, acceptance notes, comments, and links before adding headings. The following is a compact update at a material boundary, not a recurring form. Delete irrelevant prompts.
+Each affected repo also contains a short active pointer in its own `WORK.md`:
 
 ```markdown
-Outcome and bounds: [What must become true, for whom/where; relevant exclusions.]
-Current state: [Observed state and undertaking disposition, distinct from Jira status.]
-Changes and decisions: [Affected repo PRs, material choices and their reasons.]
-Basis and limits: [Exact qTest run/log if applicable, code revision, operational observation; unsupported claims.]
-Remaining/closure: [Who/what is needed next, or which scope is complete/abandoned and why.]
+| Work | Local branch/revision at checkpoint | Canonical account |
+| --- | --- | --- |
+| PLAT-482 SSM filter | `ssm-filter` / `f31` | https://github.com/ORG/platform-workspace/blob/main/work/PLAT-482.md |
 ```
 
-An agent taking over reads the Jira account and links, then checks relevant current conditions before acting. On handoff, the person or agent leaving work updates the same account with live state and material uncertainty. A peer can then read the basis for an outcome without replaying agent sessions. Team-specific change approvals and security controls retain their own authority; this example does not grant access or define an approval gate.
+From an affected repo clone, an agent finds local work and reaches the broader account; from the work-root clone it finds the entire cross-repo undertaking. The full account is not available offline from every affected repo without replication. Keep one canonical account to prevent divergence. Publish pointers and checkpoints to discoverable default branches under ordinary review controls. An unpublished worktree is outside what a clean clone can know.
 
-## Worked example: SSM connectivity filter across two repositories
+## Copyable cross-repo account
 
-The fictional Jira work item `PLAT-482` belongs to a PI objective to reduce avoidable automation failures. The undertaking is to exclude AWS instances whose SSM connection is unavailable from a specific AAP job launch **without hiding excluded hosts**. One GitHub repo implements the inventory/filter logic; another changes the affected AAP job configuration. The PI objective groups planning; it does not supply the acceptance evidence.
+```markdown
+# PLAT-482 — [Outcome or question]
 
-**Jira `PLAT-482`, intent and boundaries.**
+Intent: [Desired effect or bounded question; constraints and evaluation.]
+State at checkpoint: [When observed; disposition; actual versus proposed.]
+Repos: [URL, branch, checked revision, merged/applied status for each repo.]
+External: [Jira item; qTest run/log if relevant; operations observation.]
+Assessment: [Result and evidence scope, conflicts, limits, unknowns.]
+Next: [Action or resumption condition; authority if material.]
+```
 
-> A qualifying launch should attempt connected hosts, mark unreachable hosts as excluded with a visible count, and preserve the pre-existing inventory behavior for hosts not in this target group. Do not silently reinterpret an unavailable SSM connection as a successful job. Change only the identified job template; no account-wide inventory policy change. Evaluation: staging tests on connected/unavailable scenarios and an observed production launch on the named job after both repository changes are applied.
+Jira decides priority, PI/sprint placement, assignment, and local approvals. Git is authoritative for the undertaking's last *recorded* intent, state, and assessment. A qTest run/log, CI check, or operations record establishes its own bounded observation. If Jira says `Done` but the account says “deployment unverified,” reconcile the conflict rather than accepting either label as proof. A bot may post a link or brief checkpoint to Jira; two-way prose synchronization is not assumed.
 
-**Linked source and test records.**
+## Worked example: SSM filter across two repos
 
-| Record | Fictional observation | What it supports |
-| --- | --- | --- |
-| Filter repo PR `#31` at revision `f31` | Unit checks show 12 connected and 3 unavailable hosts: connected hosts selected, 3 excluded; review confirms excluded-host count is emitted. | Filter behavior against synthetic cases. |
-| AAP config repo PR `#12` at revision `c12` | Staging job template points to the new filter; configuration review finds no other template changed. | Proposed configuration for the named job in that revision. |
-| qTest test run `RUN-812`, log `LOG-812a`, staging at 10:20 | Connected/unavailable case passed against staging revisions `f31` and `c12`; explicit steps found 12 attempted and 3 excluded, with exclusion visible. | The staging integration observation; no claim about production. |
+`PLAT-482` aims to exclude instances whose SSM connection is unavailable at launch from one AAP job, while reporting their identifiers and count. Acceptance requires staging checks for connected and unavailable hosts and an observed launch of the named production job after both changes are applied. Account-wide inventory behavior is out of scope.
 
-**Jira update at the end of a sprint.**
+The work root's `WORK.md` links `work/PLAT-482.md`. The filter and AAP configuration repos each point there from their `WORK.md`. The account checkpoint reads:
 
-> State: open. Both PRs merged; qTest staging run passed for the two recorded revisions. Production application and launch have not been observed. No live outcome is claimed. Next: authorized operator applies the job change, then records target, time, effective configuration, attempted/excluded host counts, and monitoring interval in the existing operations record. Sprint completion does not close this undertaking.
+```markdown
+# PLAT-482 — Visible SSM exclusion for named AAP job
 
-**Later Jira closure, if the following fictional operational evidence existed.**
+Intent: Attempt connected hosts, report unavailable hosts as excluded, and
+preserve behavior outside the named job. Evaluate with staging cases and a
+production launch after both changes are applied.
 
-> Operations record `OPS-91` reports the named production job at 14:10 using filter revision `f31` and effective configuration `c12`; the 14:15 launch attempted 12 connected hosts and recorded 3 unavailable hosts as excluded with their identifiers. No broader fleet behavior was examined. Complete for the named-job launch and visibility scope, supported by `OPS-91`, PRs `#31`/`#12`, and staging run `RUN-812`/log `LOG-812a`. The fallback behavior when an SSM connection drops *during* a run is untested and remains a separately identified follow-up; it was not part of this undertaking's declared scope.
+State at checkpoint: Open, 2026-09-25 10:20 UTC. Both changes merged and
+staging checked. Production application and launch are unobserved.
 
-If the production observation instead shows hidden hosts, retain the failed result, keep the undertaking open or abandon it with reason, and record recovery. Do not rewrite acceptance conditions after seeing the result. For a pure operational incident investigation, the Jira item and incident log can hold all relevant meaning; GitHub PRs and qTest results need not exist.
+Repos: filter repo revision `f31` merged; AAP config repo revision `c12`
+merged. Confirm effective deployed revisions before claiming live behavior.
 
-For example, a separate fictional Jira investigation `PLAT-483` asks whether the retained controller and SSM logs explain a one-hour spike in `TargetNotConnected`. The incident log shows 18 such failures, but its timestamps cannot distinguish transient disconnection from a credential problem. The Jira item can close as **investigation complete, cause unresolved**, with the log interval and missing evidence identified and a proposed telemetry change recorded as separate, unstarted work. No PR, qTest entry, or product increment is needed for that outcome.
+External: Jira PLAT-482 (planning); qTest run RUN-812, log LOG-812a
+(staging). No production operations record yet.
 
-## Keep coordination proportional
+Assessment: RUN-812 observed 12 attempted and 3 visibly excluded hosts
+with `f31` and `c12` in staging. This supports that staging case only.
 
-Retain the team's existing Jira issue types, PI planning, sprint board and qTest practices. Do not create an extra Jira ticket, qTest case, and repo file per undertaking. Preserve a significant decision in its durable owner, then point related work at it. A Jira item may close after a bounded investigation reports an unknown cause; a deployment item must not close merely because implementation is merged. Cross-repo links make a single outcome review possible without copying every PR description into Jira.
+Next: Authorized operator applies both changes, confirms effective target
+configuration, records the production launch and exclusion counts in the
+operations record, then updates this account with the bounded conclusion.
+```
 
-After representative work, run the small recovery check in the [adoption plan](ADC-ADOPTION.md): someone outside the work should be able to explain the original purpose, actual state, evidence coverage and remaining obligations using the existing records. Adjust the mapping where this fails.
+If an operations record later confirms the intended behavior, update the account with target, time, effective revisions, result, and limits; mark complete for that scope and remove active pointers. If production differs, record the discrepancy and recovery. Jira status alone cannot resolve the conflict.
+
+For a no-code investigation, omit `Repos` and qTest. An investigation of a one-hour `TargetNotConnected` spike may finish with “18 failures observed; cause unresolved because retained logs cannot distinguish disconnection from credentials.” The investigation can be complete while the causal claim remains unknown. Jira still supplies planning and ownership.
+
+## Consistency limit
+
+Checked commit IDs across repos describe a reproducible *source snapshot* only if those revisions remain fetchable. They do not constitute an atomic transaction or prove that live infrastructure matches. A rolling “latest” loses reproducibility. A new agent fetches checked revisions and current branch tips, inspects drift, and reads current Jira and live state as needed. Concurrent changes to one account use ordinary Git conflict resolution and a fresh state check.
+
+Pilot one existing cross-repo outcome before adding `WORK.md` everywhere. The [adoption plan](ADC-ADOPTION.md) defines the recovery check.
