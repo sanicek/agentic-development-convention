@@ -18,7 +18,7 @@ Status: **0.1.0-draft.1 — proposal, not an established standard.** The design 
 
 ## Applying ADC
 
-The [adoption plan](ADC-ADOPTION.md) gives a small pilot and guidance for choosing where records live. It includes two non-normative application patterns: [a solo GitHub developer](ADC-SOLO-GITHUB.md) and [a platform team using GitHub, Jira, and qTest](ADC-TEAM-PLATFORM.md). Each has a copyable prompt and a worked example; neither changes the specification's core.
+The [repo-first adoption plan](ADC-ADOPTION.md) tests whether an agent can resume work from a clean repository checkout. It includes two non-normative application patterns: [a solo GitHub developer](ADC-SOLO-GITHUB.md) and [a multi-repo platform team](ADC-TEAM-PLATFORM.md). Git contains a discoverable work checkpoint; Jira, qTest, and operational systems retain their planning and evidence roles. Neither pattern changes the specification's core.
 
 ## The model
 
